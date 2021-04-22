@@ -74,11 +74,11 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         mimetype='application/woff2'
         sendReply = True
       if self.path.endswith('.ico'):
-        mimetype='text/html'
+        mimetype='image/png'
         sendReply = True
 
       if sendReply == True:
-        f = open(curdir + sep + self.path)
+        f = open(curdir + sep + self.path,'rb')
         self.send_response(200)
         self.send_header('Content-type',mimetype)
         self.end_headers()
@@ -92,7 +92,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-          self.wfile.write(json.dumps(switch_desc, sort_keys=True))
+          self.wfile.write(json.dumps(switch_desc, sort_keys=True).encode())
           success = True
 
         if None != re.search('/host_info/*', self.path):
@@ -100,7 +100,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-          self.wfile.write(json.dumps(hosts, sort_keys=True))
+          self.wfile.write(json.dumps(hosts, sort_keys=True).encode())
           success = True
 
         if None != re.search('/topo_info/*', self.path):
@@ -122,14 +122,14 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
               return xdata
           adj_raw = transform_key(adjacency)           # dpidToStr.
           adj_raw_tmp = stripNone(adj_raw)           # Remove self links.
-          self.wfile.write(json.dumps(adj_raw_tmp, sort_keys=True))
+          self.wfile.write(json.dumps(adj_raw_tmp, sort_keys=True).encode())
           success = True
         if None != re.search('/port_stats/*', self.path):
           #print 'Port Stats ...'
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-          self.wfile.write(json.dumps(port_stats, sort_keys=True))
+          self.wfile.write(json.dumps(port_stats, sort_keys=True).encode())
           success = True
 
         if None != re.search('/aggr_stats/*', self.path):
@@ -137,7 +137,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-          self.wfile.write(json.dumps(aggr_stats, sort_keys=True))
+          self.wfile.write(json.dumps(aggr_stats, sort_keys=True).encode())
           success = True
 
 
@@ -160,21 +160,21 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                   f[ix][jx] = str(ip)
             return flow_stats
           processed_fs = process_fs(flow_stats)
-          self.wfile.write(json.dumps(processed_fs, ensure_ascii=False, sort_keys=True))
+          self.wfile.write(json.dumps(processed_fs, ensure_ascii=False, sort_keys=True).encode())
           success = True
         if None != re.search('/bw/*', self.path):
           #print 'Throughput ...'
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-          self.wfile.write(json.dumps(link_bw, sort_keys=True))
+          self.wfile.write(json.dumps(link_bw, sort_keys=True).encode())
           success = True
         if None != re.search('/bandwidth/*', self.path):
           #print 'Throughput Bidectional ...'
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-          self.wfile.write(json.dumps(link_bw_total, sort_keys=True))
+          self.wfile.write(json.dumps(link_bw_total, sort_keys=True).encode())
           success = True
 
       if success == False:
