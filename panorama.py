@@ -8,14 +8,14 @@ from pox.lib.addresses import IPAddr, EthAddr
 from pox.lib.packet.ipv4 import IP_ANY, IP_BROADCAST
 from pox.lib.packet.ethernet import ETHER_ANY, ETHER_BROADCAST
 from pox.openflow.discovery import Discovery
-import BaseHTTPServer
-from SocketServer import ThreadingMixIn
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+import http.server
+from socketserver import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler,HTTPServer
 import re
 import cgi
 import json
 import time
-import thread
+import _thread
 import argparse
 import threading
 import webbrowser
@@ -78,7 +78,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         sendReply = True
 
       if sendReply == True:
-        f = open(curdir + sep + self.path) 
+        f = open(curdir + sep + self.path)
         self.send_response(200)
         self.send_header('Content-type',mimetype)
         self.end_headers()
@@ -178,7 +178,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
           success = True
 
       if success == False:
-        print 'Error'
+        print('Error')
         self.send_response(403)
         self.end_headers()
     except IOError:
@@ -276,7 +276,8 @@ def _handle_ConnectionDown (event):
 
       expired_hosts = []
       for i in hosts:                        # remove associated hosts 
-         if hosts[i]['switch'] == dpidToStr(sw):           expired_hosts.append(i)
+         if hosts[i]['switch'] == dpidToStr(sw):
+           expired_hosts.append(i)
       for i in expired_hosts:
         del hosts[i]
 
@@ -293,7 +294,7 @@ class panorama (EventMixin):
   global hosts
   def __init__ (self):
     def startup ():
-      self.HOST_TIMEOUT = 15		# time (in seconds) to perform cleanup, generally it should be greater than expected HARD_TIMEOUTs
+      self.HOST_TIMEOUT = 15                # time (in seconds) to perform cleanup, generally it should be greater than expected HARD_TIMEOUTs
       Timer(self.HOST_TIMEOUT, self.host_refresh, recurring=True)
       core.openflow.addListeners(self, priority=0)
       core.openflow_discovery.addListeners(self)
@@ -357,11 +358,11 @@ def launch ():
   def server_launch():
     webbrowser.open('http://localhost:%s/%s' % (PORT, FILE))
     server = SimpleHttpServer('127.0.0.1', int(PORT))
-    print 'HTTP Server Running...........'
+    print('HTTP Server Running...........')
     server.start()
     server.waitForThread()
   
-  thread.start_new(server_launch, ())
+  _thread.start_new(server_launch, ())
   from pox.log.level import launch
   launch(CRITICAL=True)
   from openflow.discovery import launch
