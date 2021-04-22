@@ -108,20 +108,20 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-	  def transform_key(d):
-	    newd = dict()
-	    for k,v in d.iteritems():
-	      if isinstance(v, dict):
-		v = transform_key(v)
-	      newd[dpidToStr(k)] = v
-	    return newd
-	  def stripNone(xdata):
-	    if isinstance(xdata, dict):
+          def transform_key(d):
+            newd = dict()
+            for k,v in d.items():
+              if isinstance(v, dict):
+                v = transform_key(v)
+              newd[dpidToStr(k)] = v
+            return newd
+          def stripNone(xdata):
+            if isinstance(xdata, dict):
               return {k:stripNone(v) for k, v in xdata.items() if k is not None and v is not None}
-	    else:
+            else:
               return xdata
-	  adj_raw = transform_key(adjacency)	   # dpidToStr.
- 	  adj_raw_tmp = stripNone(adj_raw)	   # Remove self links.
+          adj_raw = transform_key(adjacency)           # dpidToStr.
+          adj_raw_tmp = stripNone(adj_raw)           # Remove self links.
           self.wfile.write(json.dumps(adj_raw_tmp, sort_keys=True))
           success = True
         if None != re.search('/port_stats/*', self.path):
@@ -146,20 +146,20 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
           self.send_response(200)
           self.send_header('Content-Type', 'application/json')
           self.end_headers()
-	  def process_fs(flow_stats):
-	    for i in flow_stats:
-	      for f in flow_stats[i]:
-	        ix = 'match'
-	        jx = 'nw_src'
-	        if jx in f[ix]:
-	          ip = f[ix][jx]
-	          f[ix][jx] = str(ip)
-	        jx = 'nw_dst'
-	        if jx in f[ix]:
-	          ip = f[ix][jx]
-	          f[ix][jx] = str(ip)
-	    return flow_stats
-	  processed_fs = process_fs(flow_stats)
+          def process_fs(flow_stats):
+            for i in flow_stats:
+              for f in flow_stats[i]:
+                ix = 'match'
+                jx = 'nw_src'
+                if jx in f[ix]:
+                  ip = f[ix][jx]
+                  f[ix][jx] = str(ip)
+                jx = 'nw_dst'
+                if jx in f[ix]:
+                  ip = f[ix][jx]
+                  f[ix][jx] = str(ip)
+            return flow_stats
+          processed_fs = process_fs(flow_stats)
           self.wfile.write(json.dumps(processed_fs, ensure_ascii=False, sort_keys=True))
           success = True
         if None != re.search('/bw/*', self.path):
@@ -245,8 +245,8 @@ def _handle_portstats_received (event):
           byte_r[dpidToStr(event.connection.dpid)][dpidToStr(p)] = f.rx_bytes
           clock[dpidToStr(event.connection.dpid)][dpidToStr(p)] = time.time()
         if adjacency[event.connection.dpid][p]==None:
-	  link_bw[dpidToStr(event.connection.dpid)][dpidToStr(p)] = 'N/A'		#since no data transmits from a switch to itself
-	  link_bw_total[dpidToStr(event.connection.dpid)][dpidToStr(p)] = 'N/A'
+          link_bw[dpidToStr(event.connection.dpid)][dpidToStr(p)] = 'N/A'                #since no data transmits from a switch to itself
+          link_bw_total[dpidToStr(event.connection.dpid)][dpidToStr(p)] = 'N/A'
 
 def _handle_aggregate_flowstats_received (event):
   global aggr_stats
@@ -275,9 +275,8 @@ def _handle_ConnectionDown (event):
       if dpidToStr(sw) in link_bw_total[dpidToStr(i)]: del link_bw_total[dpidToStr(i)][dpidToStr(sw)]
 
       expired_hosts = []
-      for i in hosts:			# remove associated hosts 
-	 if hosts[i]['switch'] == dpidToStr(sw):
-           expired_hosts.append(i)
+      for i in hosts:                        # remove associated hosts 
+         if hosts[i]['switch'] == dpidToStr(sw):           expired_hosts.append(i)
       for i in expired_hosts:
         del hosts[i]
 
